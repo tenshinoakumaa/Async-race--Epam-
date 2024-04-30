@@ -2,21 +2,22 @@ module.exports = {
   root: true,
   env: { browser: true, es2020: true },
   extends: [
-    'airbnb-base',
-    'plugin:@typescript-eslint/recommended',
-    'plugin:react-hooks/recommended',
+    "plugin:@typescript-eslint/recommended",
+    "airbnb-base",
+    "airbnb-typescript",
+    "plugin:prettier/recommended",
+    "prettier"
   ],
   parser: '@typescript-eslint/parser',
   plugins: ['react-hooks', '@typescript-eslint'],
   rules: {
-    'react-hooks/rules-of-hooks': 'error',
-    'react-hooks/exhaustive-deps': 'warn',
-    '@typescript-eslint/explicit-module-boundary-types': 'off',
-    'import/extensions': ['error', 'ignorePackages', { ts: 'never' }],
-    'import/no-unresolved': 'off',
-    'import/prefer-default-export': 'off',
-    'max-lines-per-function': ['error', { max: 40 }],
-    'no-magic-numbers': ['error', { ignore: [-1, 0, 1, 100] }],
+    "no-debugger": "off",
+    "no-console": 0,
+    "class-methods-use-this": "off",
+    "@typescript-eslint/no-explicit-any": 2,
+    "max-lines-per-function": ["error", 40],
+    "react/jsx-filename-extension": "off",
+    "import/prefer-default-export": 0,
   },
   overrides: [
     {
