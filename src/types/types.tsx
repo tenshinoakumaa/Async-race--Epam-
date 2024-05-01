@@ -1,15 +1,13 @@
-type RGB = `rgb(${number}, ${number}, ${number})`;
-type RGBA = `rgba(${number}, ${number}, ${number}, ${number})`;
-type HEX = `#${string}`;
-
-export type Color = RGB | RGBA | HEX;
-
 export interface Car {
   name: string;
-  color: Color;
+  color: string;
   id: number;
 }
 
+export interface CarBody {
+  name: string;
+  color: string;
+}
 export interface Winner {
   id: number;
   wins: number;
@@ -35,4 +33,15 @@ export interface NavProps {
 
 export interface GetCarsResponse {
   (page: number): Promise<CarsResponse>;
+}
+
+export interface CreateCarResponse {
+  (body: Car): Promise<Car>;
+}
+
+export interface GarageProps {
+  cars: Car[] | undefined;
+  currentPage: number | undefined;
+  totalPages: number;
+  onPageChange: (page: number) => void;
 }
