@@ -2,6 +2,7 @@ import * as React from "react";
 import { Car, CarBody, GarageProps } from "../types/types";
 import createCar from "../api/createCar";
 import updateCar from "../api/updateCar";
+import deleteCar from "../api/deleteCar";
 import carModels from "../carName&Models/carModels";
 import carNames from "../carName&Models/carNames";
 import CarSVG from "./CarSVG";
@@ -78,6 +79,18 @@ const Garage: React.FC<GarageProps & { fetchData: (page: number) => void }> = ({
       await fetchData(Number(currentPage));
     } catch (error) {
       console.error("Error updating car:", error);
+    }
+  };
+
+  const DeleteCar = async () => {
+    if (selectedCar != undefined) {
+      try {
+        await deleteCar(selectedCar?.id);
+        console.log("Car deleted successfully");
+        await fetchData(Number(currentPage));
+      } catch (error) {
+        console.error("Error deleting car:", error);
+      }
     }
   };
 
@@ -160,7 +173,7 @@ const Garage: React.FC<GarageProps & { fetchData: (page: number) => void }> = ({
 
             <button
               className="bg-red-500 text-white px-4 py-2 rounded-xl"
-              onClick={UpdateCar}
+              onClick={DeleteCar}
             >
               Delete car
             </button>

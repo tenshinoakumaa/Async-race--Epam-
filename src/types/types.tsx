@@ -43,6 +43,10 @@ export interface UpdateCarResponse {
   (id: number, body: CarBody): Promise<Car>;
 }
 
+export interface DeleteCarResponse {
+  (id: number): Promise<void>;
+}
+
 export interface GarageProps {
   cars: Car[] | undefined;
   currentPage: number | undefined;
