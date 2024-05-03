@@ -124,7 +124,11 @@ const Garage: React.FC<GarageProps & { fetchData: (page: number) => void }> = ({
           {cars &&
             cars.map((car) => (
               <li
-                onClick={() => setSelectedCar(car)}
+                onClick={() =>
+                  selectedCar == car
+                    ? setSelectedCar(undefined)
+                    : setSelectedCar(car)
+                }
                 style={{
                   borderBottom: "1px solid #000",
                   background: selectedCar?.id == car.id ? "gray" : "",
@@ -132,7 +136,7 @@ const Garage: React.FC<GarageProps & { fetchData: (page: number) => void }> = ({
                 key={car.id}
                 className="flex items-center justify-center py-4 rounded-xl"
               >
-                <CarSVG carBody={car} left="86%" />
+                <CarSVG carBody={car} left="0%" />
                 <img
                   src={finishLine}
                   className="w-14"
@@ -143,6 +147,14 @@ const Garage: React.FC<GarageProps & { fetchData: (page: number) => void }> = ({
               </li>
             ))}
         </ul>
+        <div className="mx-auto pt-14 flex justify-between items-center max-w-sm">
+          <button className="bg-green-500 text-white px-4 py-2 rounded-xl">
+            Start race
+          </button>
+          <button className="bg-red-500 text-white px-4 py-2 rounded-xl">
+            Reset race
+          </button>
+        </div>
         <div className="flex justify-between items-center pt-7 max-w-5xl mx-auto">
           <button
             onClick={generateAndCreateCars}
