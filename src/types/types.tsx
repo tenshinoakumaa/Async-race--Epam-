@@ -45,3 +45,8 @@ export interface GarageProps {
   totalPages: number;
   onPageChange: (page: number) => void;
 }
+
+export interface CarSVGProps {
+  carBody: CarBody;
+  left: string;
+}
