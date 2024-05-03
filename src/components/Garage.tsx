@@ -6,6 +6,8 @@ import carNames from "../carName&Models/carNames";
 import CarSVG from "./CarSVG";
 import { CSSProperties } from "react";
 import finishLine from "../img/finish-line.png";
+import { useState } from "react";
+import { HexColorPicker } from "react-colorful";
 
 const Garage: React.FC<GarageProps & { fetchData: (page: number) => void }> = ({
   cars,
@@ -49,6 +51,21 @@ const Garage: React.FC<GarageProps & { fetchData: (page: number) => void }> = ({
     }
   };
 
+  const CreateCar = async () => {
+    const newCar: CarBody = {
+      name: name,
+      color: color,
+    };
+
+    try {
+      const res: Car = await createCar(newCar);
+      console.log("Car created successfully: " + res);
+      await fetchData(Number(currentPage));
+    } catch (error) {
+      console.error("Error creating car:", error);
+    }
+  };
+
   const goToPreviousPage = () => {
     if (currentPage !== undefined && currentPage > 1) {
       onPageChange(currentPage - 1);
@@ -71,7 +88,8 @@ const Garage: React.FC<GarageProps & { fetchData: (page: number) => void }> = ({
     zIndex: "0",
   };
 
-  const UlStyle: CSSProperties = {};
+  const [color, setColor] = useState("#ffffff");
+  const [name, setName] = useState("");
 
   return (
     <div className="bg-white">
@@ -95,15 +113,27 @@ const Garage: React.FC<GarageProps & { fetchData: (page: number) => void }> = ({
               </li>
             ))}
         </ul>
-        <div className="flex justify-between pt-7 max-w-xl mx-auto">
-          <button onClick={generateAndCreateCars}>Generate Cars</button>
+        <div className="flex justify-between items-center pt-7 max-w-5xl mx-auto">
+          <button onClick={generateAndCreateCars} className="bg-black text-white px-4 py-2 rounded-xl">Generate Cars</button>
+          <div className="bg-black w-1 h-12"></div>
+          <div className="flex items-center justify-between space-x-8">
+            <input
+            className="px-4 py-2 bg-black rounded-xl text-white"
+              type="text"
+              onChange={(event) => setName(event.target.value)}
+              placeholder="car name"
+            />
+            <button className="bg-black text-white px-4 py-2 rounded-xl" onClick={CreateCar}>Create car</button>
+            <button className="bg-black text-white px-4 py-2 rounded-xl">Update car</button>
+            <HexColorPicker color={color} onChange={setColor} />
+          </div>
         </div>
-        <div className="flex justify-between py-7 max-w-xl mx-auto">
-          <button onClick={goToPreviousPage}>Previous Page</button>
-          <span>
+        <div className="flex justify-between items-center py-7 max-w-xl mx-auto">
+          <button className="bg-black text-white px-4 py-2 rounded-xl" onClick={goToPreviousPage}>Previous Page</button>
+          <span className="text-xl font-bold">
             Page {currentPage} of {totalPages}
           </span>
-          <button onClick={goToNextPage}>Next Page</button>
+          <button className="bg-black text-white px-4 py-2 rounded-xl" onClick={goToNextPage}>Next Page</button>
         </div>
       </div>
     </div>
