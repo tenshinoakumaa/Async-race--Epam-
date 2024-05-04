@@ -4,6 +4,7 @@ import Garage from "./components/Garage";
 import getCars from "./api/getCars";
 import { Car } from "./types/types";
 import { CSSProperties } from "react";
+import { GARAGE_LIMIT } from "./api/variables";
 
 const ContainerStyles: CSSProperties = {
   background: "#110000",
@@ -14,14 +15,14 @@ export default function App() {
     "garage" | "winners"
   >("garage");
   const [cars, setCars] = useState<Car[] | undefined>(undefined);
-  const [currentPage, setCurrentPage] = useState<number | undefined>(1); // Updated to accept undefined
+  const [currentPage, setCurrentPage] = useState<number | undefined>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
 
   const fetchData = async (page: number) => {
     try {
       const { items, count } = await getCars(page);
       setCars(items);
-      setTotalPages(Math.ceil(Number(count) / 7));
+      setTotalPages(Math.ceil(Number(count) / (GARAGE_LIMIT)));
       setCurrentPage(page);
     } catch (error) {
       console.error("Error fetching cars:", error);

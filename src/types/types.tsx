@@ -47,6 +47,17 @@ export interface DeleteCarResponse {
   (id: number): Promise<void>;
 }
 
+export interface DriveResponse {
+  (id: number): Promise<true | false>;
+}
+
+export interface EngineResponse {
+  (id: number, status: "started" | "stopped"): Promise<{
+    velocity: number;
+    distance: number;
+  }>;
+}
+
 export interface GarageProps {
   cars: Car[] | undefined;
   currentPage: number | undefined;
