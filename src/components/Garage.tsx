@@ -100,7 +100,7 @@ const Garage: React.FC<GarageProps & { fetchData: (page: number) => void }> = ({
   const [carsVelocity, setCarsVelocity] = useState<number[]>([]);
   useEffect(() => {
     if (cars) {
-      setCarsVelocity(Array(cars.length).fill(0));
+      setCarsVelocity([...Array(cars.length).fill(0)]);
     }
   }, [cars]);
   const [carsPosition, setCarsPosition] = useState<number[]>(
@@ -109,7 +109,7 @@ const Garage: React.FC<GarageProps & { fetchData: (page: number) => void }> = ({
 
   useEffect(() => {
     if (cars) {
-      setCarsPosition(Array(cars.length).fill(0));
+      setCarsPosition([...Array(cars.length).fill(0)]);
     }
   }, [cars]);
 
@@ -154,6 +154,11 @@ const Garage: React.FC<GarageProps & { fetchData: (page: number) => void }> = ({
     left: "86%",
     zIndex: "0",
   };
+
+  useEffect(() => {
+    setCarsVelocity(Array(cars?.length).fill(0));
+    setCarsPosition(Array(cars?.length).fill(0));
+  }, [currentPage]);
 
   const [color, setColor] = useState("#ffffff");
   const [name, setName] = useState("");
@@ -263,6 +268,3 @@ const Garage: React.FC<GarageProps & { fetchData: (page: number) => void }> = ({
 };
 
 export default Garage;
-function forceUpdate() {
-  throw new Error("Function not implemented.");
-}
