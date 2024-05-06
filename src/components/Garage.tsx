@@ -180,7 +180,11 @@ const Garage: React.FC<GarageProps & { fetchData: (page: number) => void }> = ({
         const res = await getEngine(car.id, "started");
         newCarsVelocity[(car.id - 1) % 7] = res.velocity;
         setCarsVelocity(newCarsVelocity);
-        const velocity = (86 / (500000 /((carsVelocity && carsVelocity[(car.id - 1) % 7]) || 0))) *5;
+        const velocity =
+          (86 /
+            (500000 /
+              ((carsVelocity && carsVelocity[(car.id - 1) % 7]) || 0))) *
+          5;
         const newIntervals = intervals;
         const startTime = new Date();
         newIntervals[(car.id - 1) % 7] = setInterval(async () => {
@@ -208,7 +212,10 @@ const Garage: React.FC<GarageProps & { fetchData: (page: number) => void }> = ({
                 updatedWinner.wins += 1;
                 await updateWinner(updatedWinner);
                 alert("Winner : " + car.name + " and time : " + timeElapsed);
-              }}}}, 1);
+              }
+            }
+          }
+        }, 1);
         setIntervals(newIntervals);
         if (res) checkStatus(car.id);
       });
@@ -315,9 +322,9 @@ const Garage: React.FC<GarageProps & { fetchData: (page: number) => void }> = ({
           <button
             className="bg-green-500 text-white px-4 py-2 rounded-xl"
             onClick={StartRace}
-            disabled={raceStarted}
+            disabled={raceStarted || raceInProgress}
             style={{
-              background: raceStarted ? "#343B29" : "",
+              background: raceStarted || raceInProgress ? "#343B29" : "",
             }}
           >
             Start race
