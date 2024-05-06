@@ -1,3 +1,6 @@
+# Task
+https://github.com/tenshinoakumaa/Async-race--Epam- 
+
 # Screenshot
 ![image](https://github.com/tenshinoakumaa/Async-race--Epam-/assets/123018377/2b61b01f-0aea-4d69-882d-bdda0563f26f)
 ![image](https://github.com/tenshinoakumaa/Async-race--Epam-/assets/123018377/ce7e0c56-c0b9-429a-96ab-68cd51322e4b)
@@ -5,7 +8,7 @@
 
 
 # Done 06.05.2024 / deadline 15.05.2024
-# Score 
+# Score 365/365
 
 Basic Structure (85 points)<br/>
 1. View Configuration (30 points) <br/> 
