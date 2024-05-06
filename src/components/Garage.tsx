@@ -123,6 +123,43 @@ const Garage: React.FC<GarageProps & { fetchData: (page: number) => void }> = ({
       clearInterval(intervals[id]);
     }
   }
+
+  const StartRaceForOneCar = async (car: Car) => {
+    if (!raceInProgress) {
+      setRaceInProgress(true);
+      setCarInRace(car.id);
+      const newCarsVelocity = carsVelocity;
+      if (newCarsVelocity) {
+        const res = await getEngine(car.id, "started");
+        console.log(res);
+        newCarsVelocity[(car.id - 1) % 7] = res.velocity;
+        setCarsVelocity(newCarsVelocity);
+        const velocity = (86 / (500000 / carsVelocity[(car.id - 1) % 7])) * 5;
+        const newIntervals = intervals;
+        const startTime = new Date();
+        newIntervals[(car.id - 1) % 7] = setInterval(async () => {
+          const currentTime = new Date();
+          const timeElapsed = (currentTime - startTime) / 1000;
+          const newPositions = carsPosition;
+          newPositions[(car.id - 1) % 7] += velocity;
+          setCarsPosition(() => [...newPositions]);
+          if (carsPosition[(car.id - 1) % 7] >= 86) {
+            clearInterval(intervals[(car.id - 1) % 7]);
+            alert(car.name + " and time : " + timeElapsed);
+            setResetButtonDisabled(false);
+          }
+        }, 1);
+        setIntervals(newIntervals);
+        if (res) {
+          checkStatus(car.id);
+        }
+      }
+    }
+  };
+
+  const [raceInProgress, setRaceInProgress] = useState(false);
+  const [carInRace, setCarInRace] = useState<number | null>(null);
+
   const StartRace = async () => {
     const promises = cars?.map(async (car) => {
       await getEngine(car.id, "stopped");
@@ -193,6 +230,8 @@ const Garage: React.FC<GarageProps & { fetchData: (page: number) => void }> = ({
   }, [raceStarted]);
 
   const handleReset = async () => {
+    setRaceInProgress(false);
+    setCarInRace(null);
     setResetButtonDisabled(true);
     cars?.map(async (car) => {
       await getEngine(car.id, "stopped");
@@ -314,6 +353,17 @@ const Garage: React.FC<GarageProps & { fetchData: (page: number) => void }> = ({
                 key={car.id}
                 className="flex items-center justify-center py-4 rounded-xl"
               >
+                <button
+                  onClick={() => StartRaceForOneCar(car)}
+                  disabled={raceInProgress && car.id !== carInRace}
+                  className="mr-4 p-2 bg-black text-white rounded-xl"
+                  style={{
+                    background:
+                      raceInProgress && car.id !== carInRace ? "gray" : "",
+                  }}
+                >
+                  Start
+                </button>
                 <img
                   src={finishLine}
                   className="w-14"
@@ -324,7 +374,19 @@ const Garage: React.FC<GarageProps & { fetchData: (page: number) => void }> = ({
                   carBody={car}
                   left={`${carsPosition[(car.id - 1) % 7]}%`}
                 />
-                <div className="text-center text-md font-bold">{car.name}</div>
+                <div className="text-center text-md font-bold mr-4">
+                  {car.name}
+                </div>
+                <button
+                  onClick={handleReset}
+                  className="bg-red-500 text-white px-4 py-2 rounded-xl"
+                  disabled={car.id !== carInRace}
+                  style={{
+                    background: car.id !== carInRace ? "#480607" : "",
+                  }}
+                >
+                  Stop
+                </button>
               </li>
             ))}
         </ul>

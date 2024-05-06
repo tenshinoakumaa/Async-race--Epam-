@@ -52,7 +52,7 @@ export default function App() {
             fetchData={fetchData}
           />
         ) : (
-          <Winners pageNumber={1} sort="wins" order="desc" />
+          <Winners />
         )}
       </div>
     </>
