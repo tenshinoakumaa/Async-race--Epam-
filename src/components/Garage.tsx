@@ -1,9 +1,12 @@
 import * as React from "react";
-import { Car, CarBody, GarageProps } from "../types/types";
+import { Car, CarBody, GarageProps, Winner } from "../types/types";
 import createCar from "../api/createCar";
 import updateCar from "../api/updateCar";
 import deleteCar from "../api/deleteCar";
 import getEngine from "../api/getEngine";
+import deleteWinner from "../api/deleteWinner";
+import updateWinner from "../api/updateWinner";
+import drive from "../api/drive";
 import carModels from "../carName&Models/carModels";
 import carNames from "../carName&Models/carNames";
 import CarSVG from "./CarSVG";
@@ -11,6 +14,8 @@ import { CSSProperties } from "react";
 import finishLine from "../img/finish-line.png";
 import { useState, useEffect } from "react";
 import { HexColorPicker } from "react-colorful";
+import createWinner from "../api/createWinner";
+import getWinner from "../api/getWinner";
 
 const Garage: React.FC<GarageProps & { fetchData: (page: number) => void }> = ({
   cars,
@@ -89,6 +94,7 @@ const Garage: React.FC<GarageProps & { fetchData: (page: number) => void }> = ({
     if (selectedCar != undefined) {
       try {
         await deleteCar(selectedCar?.id);
+        await deleteWinner(selectedCar?.id);
         console.log("Car deleted successfully");
         await fetchData(Number(currentPage));
       } catch (error) {
@@ -98,43 +104,105 @@ const Garage: React.FC<GarageProps & { fetchData: (page: number) => void }> = ({
   };
 
   const [carsVelocity, setCarsVelocity] = useState<number[]>([]);
+
   useEffect(() => {
     if (cars) {
       setCarsVelocity([...Array(cars.length).fill(0)]);
+      setCarsPosition([...Array(cars.length).fill(0)]);
     }
   }, [cars]);
   const [carsPosition, setCarsPosition] = useState<number[]>(
     Array(cars?.length).fill(0)
   );
 
-  useEffect(() => {
-    if (cars) {
-      setCarsPosition([...Array(cars.length).fill(0)]);
+  async function checkStatus(id: number) {
+    const success = await drive(id);
+    // console.log(id + " : stopped");
+    // console.log(success);
+    if (success) {
+      clearInterval(intervals[id]);
     }
-  }, [cars]);
-
+  }
   const StartRace = async () => {
+    const promises = cars?.map(async (car) => {
+      await getEngine(car.id, "stopped");
+    });
+    await Promise.all(promises);
+    setCarsVelocity(() => [0, 0, 0, 0, 0, 0, 0]);
+    setCarsPosition(() => [0, 0, 0, 0, 0, 0, 0]);
+    console.log(carsPosition);
+    let winner = null;
     const newCarsVelocity = carsVelocity;
     if (newCarsVelocity) {
+      setRaceStarted(true);
       cars?.map(async (car) => {
         const res = await getEngine(car.id, "started");
-        newCarsVelocity[car.id] = res.velocity;
+        console.log(res);
+        newCarsVelocity[(car.id - 1) % 7] = res.velocity;
         setCarsVelocity(newCarsVelocity);
-        const velocity = (86 / (500000 / carsVelocity[car.id])) * 5;
-        // console.log(car.name + "'s velocity : " + carsVelocity[car.id]);
-        // console.log(car.name + "'s velocity : " + velocity);
-        const interval = setInterval(() => {
+        const velocity = (86 / (500000 / carsVelocity[(car.id - 1) % 7])) * 5;
+        const newIntervals = intervals;
+        const startTime = new Date();
+        newIntervals[(car.id - 1) % 7] = setInterval(async () => {
+          const currentTime = new Date();
+          const timeElapsed = (currentTime - startTime) / 1000;
           const newPositions = carsPosition;
-          newPositions[car.id] += velocity;
+          newPositions[(car.id - 1) % 7] += velocity;
           setCarsPosition(() => [...newPositions]);
-          if (carsPosition[car.id] >= 86) {
-            clearInterval(interval);
-            console.log("Завершено");
+          if (carsPosition[(car.id - 1) % 7] >= 86) {
+            clearInterval(intervals[(car.id - 1) % 7]);
+            if (winner === null) {
+              const newWinner = {
+                id: car.id,
+                wins: 1,
+                time: timeElapsed,
+              };
+              winner = newWinner;
+              try {
+                await createWinner(winner);
+                alert("Winner : " + car.name + " and time : " + timeElapsed);
+              } catch {
+                const res = await getWinner(winner.id);
+                const updatedWinner = res;
+                updatedWinner.time = Math.max(updatedWinner.time, timeElapsed);
+                updatedWinner.wins += 1;
+                await updateWinner(updatedWinner);
+                alert("Winner : " + car.name + " and time : " + timeElapsed);
+              }
+            }
           }
-          console.log(carsPosition[car.id]);
         }, 1);
+        setIntervals(newIntervals);
+        if (res) {
+          checkStatus(car.id);
+        }
       });
     }
+  };
+
+  const [raceStarted, setRaceStarted] = useState(false);
+  const [resetButtonDisabled, setResetButtonDisabled] = useState(true);
+  useEffect(() => {
+    let timer;
+    if (raceStarted) {
+      timer = setTimeout(() => {
+        setResetButtonDisabled(false);
+      }, 2000);
+    }
+    return () => clearTimeout(timer);
+  }, [raceStarted]);
+
+  const handleReset = async () => {
+    setResetButtonDisabled(true);
+    cars?.map(async (car) => {
+      await getEngine(car.id, "stopped");
+    });
+    setRaceStarted(false);
+    cars?.map((car) => {
+      clearInterval(intervals[(car.id - 1) % 7]);
+    });
+    setCarsVelocity(() => [0, 0, 0, 0, 0, 0, 0]);
+    setCarsPosition(() => [0, 0, 0, 0, 0, 0, 0]);
   };
 
   const goToPreviousPage = () => {
@@ -164,6 +232,7 @@ const Garage: React.FC<GarageProps & { fetchData: (page: number) => void }> = ({
   const [name, setName] = useState("");
 
   const [selectedCar, setSelectedCar] = useState<Car>();
+  const [intervals, setIntervals] = useState([]);
 
   return (
     <div className="bg-white">
@@ -209,10 +278,21 @@ const Garage: React.FC<GarageProps & { fetchData: (page: number) => void }> = ({
           <button
             className="bg-green-500 text-white px-4 py-2 rounded-xl"
             onClick={StartRace}
+            disabled={raceStarted}
+            style={{
+              background: raceStarted ? "#343B29" : "",
+            }}
           >
             Start race
           </button>
-          <button className="bg-red-500 text-white px-4 py-2 rounded-xl">
+          <button
+            onClick={handleReset}
+            className="bg-red-500 text-white px-4 py-2 rounded-xl"
+            disabled={resetButtonDisabled}
+            style={{
+              background: resetButtonDisabled ? "#480607" : "",
+            }}
+          >
             Reset race
           </button>
         </div>
@@ -229,7 +309,7 @@ const Garage: React.FC<GarageProps & { fetchData: (page: number) => void }> = ({
                 style={{
                   borderBottom: "1px solid #000",
                   background: selectedCar?.id == car.id ? "gray" : "",
-                  visibility: car.id == cars.length ? "hidden" : "visible",
+                  // visibility: car.id == cars.length ? "hidden" : "visible",
                 }}
                 key={car.id}
                 className="flex items-center justify-center py-4 rounded-xl"
@@ -240,7 +320,10 @@ const Garage: React.FC<GarageProps & { fetchData: (page: number) => void }> = ({
                   alt=""
                   style={FinishLine}
                 />
-                <CarSVG carBody={car} left={`${carsPosition[car.id]}%`} />
+                <CarSVG
+                  carBody={car}
+                  left={`${carsPosition[(car.id - 1) % 7]}%`}
+                />
                 <div className="text-center text-md font-bold">{car.name}</div>
               </li>
             ))}

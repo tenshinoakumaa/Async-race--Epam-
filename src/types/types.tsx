@@ -18,6 +18,7 @@ export interface CarsResponse {
   items: Car[];
   count: string;
 }
+
 export interface WinnerCar extends Winner {
   car: Car;
 }
@@ -31,8 +32,18 @@ export interface NavProps {
   setSelectedComponent: (component: "garage" | "winners") => void;
 }
 
+export interface WinnerProps {
+  pageNumber: number;
+  sort: string;
+  order: string;
+}
+
 export interface GetCarsResponse {
   (page: number): Promise<CarsResponse>;
+}
+
+export interface GetCarResponse {
+  (id: number): Promise<Car>;
 }
 
 export interface CreateCarResponse {
@@ -56,6 +67,17 @@ export interface EngineResponse {
     velocity: number;
     distance: number;
   }>;
+}
+
+export interface CreateWinnerResponse {
+  (body: Winner): Promise<Winner>;
+}
+export interface GetWinnerResponse {
+  (id: number): Promise<Winner>;
+}
+
+export interface UpdateWinnerResponse {
+  (body: Winner): Promise<Winner>;
 }
 
 export interface GarageProps {

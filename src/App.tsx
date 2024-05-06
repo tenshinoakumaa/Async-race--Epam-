@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Nav from "./components/Nav";
 import Garage from "./components/Garage";
+import Winners from "./components/Winners"; // Import the Winners component
 import getCars from "./api/getCars";
 import { Car } from "./types/types";
 import { CSSProperties } from "react";
@@ -22,7 +23,7 @@ export default function App() {
     try {
       const { items, count } = await getCars(page);
       setCars(items);
-      setTotalPages(Math.ceil(Number(count) / (GARAGE_LIMIT)));
+      setTotalPages(Math.ceil(Number(count) / GARAGE_LIMIT));
       setCurrentPage(page);
     } catch (error) {
       console.error("Error fetching cars:", error);
@@ -51,7 +52,7 @@ export default function App() {
             fetchData={fetchData}
           />
         ) : (
-          ""
+          <Winners pageNumber={1} sort="wins" order="desc" />
         )}
       </div>
     </>
