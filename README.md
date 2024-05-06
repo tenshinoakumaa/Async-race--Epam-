@@ -1,5 +1,9 @@
 # Task
-https://github.com/tenshinoakumaa/Async-race--Epam- 
+Code - https://github.com/tenshinoakumaa/Async-race--Epam- 
+Prod - https://github.com/tenshinoakumaa/Async-race--Epam-/tree/prod
+
+# Deploy
+Link - https://tenshinoakumaa.github.io/Async-race--Epam-/
 
 # Screenshot
 ![image](https://github.com/tenshinoakumaa/Async-race--Epam-/assets/123018377/2b61b01f-0aea-4d69-882d-bdda0563f26f)
