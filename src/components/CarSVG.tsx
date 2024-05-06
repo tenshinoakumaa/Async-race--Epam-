@@ -1,5 +1,13 @@
-import { CarBody } from "../types/types";
+import * as React from "react";
 import { CarSVGProps } from "../types/types";
+
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      [elemName: string]: any;
+    }
+  }
+}
 
 const CarSVG: React.FC<CarSVGProps> = ({ carBody, left }: CarSVGProps) => {
   return (
