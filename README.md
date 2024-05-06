@@ -12,14 +12,14 @@ Link - https://tenshinoakumaa.github.io/Async-race--Epam-/
 
 
 # Done 06.05.2024 / deadline 15.05.2024
-# Score 365/365
+# Score 355/365
 
 Basic Structure (85 points)<br/>
 1. View Configuration (30 points) <br/> 
 ✅ Two Views (10 points): Implement two primary views: "Garage" and "Winners". <br/>
 ✅ Garage View Content (5 points): The "Garage" view must display its name, the current page number, and the total number of cars in the database (how many car user has in his garage). <br/>
 ✅ Winners View Content (5 points): The "Winners" view should similarly display its name, the current page number, and the total count of records in the database (how many records the winners table contains). <br/>
-✅ Persistent State (10 points): Ensure the view state remains consistent when navigating between views. This includes preserving page numbers and input states. For example, page number shouldn't be reset, input controls should contain that they contained before switching, etc.
+❌ Persistent State (10 points): Ensure the view state remains consistent when navigating between views. This includes preserving page numbers and input states. For example, page number shouldn't be reset, input controls should contain that they contained before switching, etc.
 <br/>
 3. Garage View Functionality (55 points)<br/>
 Car Management (45 points)<br/>
