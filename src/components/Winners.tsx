@@ -10,6 +10,7 @@ const Winners: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [sort, setSort] = useState<string>("id");
   const [order, setOrder] = useState<string>("asc");
+  const [totalWinners, setTotalWinners] = useState<string>("0");
 
   useEffect(() => {
     const fetchWinners = async (sort, order) => {
@@ -19,6 +20,7 @@ const Winners: React.FC = () => {
           sort,
           order,
         });
+        setTotalWinners(count);
         setWinners(items);
         const totalCount = Number(count);
         setTotalPages(Math.ceil(totalCount / WINNERS_LIMIT));
@@ -87,6 +89,10 @@ const Winners: React.FC = () => {
           Next
         </button>
       </div>
+      <div className="w-full text-center text-2xl pb-4">
+        Total count of cars : {totalWinners}
+      </div>
+
       <div className="flex flex-col items-center space-y-4 pb-7">
         <button
           className="text-xl p-2 bg-black text-white rounded-xl"

@@ -23,6 +23,7 @@ const Garage: React.FC<GarageProps & { fetchData: (page: number) => void }> = ({
   totalPages,
   onPageChange,
   fetchData,
+  count,
 }) => {
   const generateAndCreateCars = async () => {
     const generateRandomColor = () => {
@@ -161,6 +162,7 @@ const Garage: React.FC<GarageProps & { fetchData: (page: number) => void }> = ({
   const [carInRace, setCarInRace] = useState<number | null>(null);
 
   const StartRace = async () => {
+    setRaceInProgress(true);
     const promises = cars?.map(async (car) => {
       await getEngine(car.id, "stopped");
     });
@@ -355,11 +357,10 @@ const Garage: React.FC<GarageProps & { fetchData: (page: number) => void }> = ({
               >
                 <button
                   onClick={() => StartRaceForOneCar(car)}
-                  disabled={raceInProgress && car.id !== carInRace}
+                  disabled={raceInProgress}
                   className="mr-4 p-2 bg-black text-white rounded-xl"
                   style={{
-                    background:
-                      raceInProgress && car.id !== carInRace ? "gray" : "",
+                    background: raceInProgress ? "gray" : "",
                   }}
                 >
                   Start
@@ -407,6 +408,7 @@ const Garage: React.FC<GarageProps & { fetchData: (page: number) => void }> = ({
             Next Page
           </button>
         </div>
+        <div className="w-full text-center text-2xl pb-4">Total count of cars : {count}</div>
       </div>
     </div>
   );

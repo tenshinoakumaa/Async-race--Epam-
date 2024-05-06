@@ -85,6 +85,7 @@ export interface GarageProps {
   currentPage: number | undefined;
   totalPages: number;
   onPageChange: (page: number) => void;
+  count: string;
 }
 
 export interface CarSVGProps {

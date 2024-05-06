@@ -18,10 +18,12 @@ export default function App() {
   const [cars, setCars] = useState<Car[] | undefined>(undefined);
   const [currentPage, setCurrentPage] = useState<number | undefined>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
+  const [totalCars, setTotalCars] = useState<string>("0");
 
   const fetchData = async (page: number) => {
     try {
       const { items, count } = await getCars(page);
+      setTotalCars(count);
       setCars(items);
       setTotalPages(Math.ceil(Number(count) / GARAGE_LIMIT));
       setCurrentPage(page);
@@ -50,6 +52,7 @@ export default function App() {
             totalPages={totalPages}
             onPageChange={handlePageChange}
             fetchData={fetchData}
+            count={totalCars}
           />
         ) : (
           <Winners />
