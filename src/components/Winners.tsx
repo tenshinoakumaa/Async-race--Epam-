@@ -8,14 +8,16 @@ const Winners: React.FC = () => {
   const [winners, setWinners] = useState<WinnerCar[]>([]);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [sort, setSort] = useState<string>("id");
+  const [order, setOrder] = useState<string>("asc");
 
   useEffect(() => {
-    const fetchWinners = async () => {
+    const fetchWinners = async (sort, order) => {
       try {
         const { items, count } = await getWinners({
           pageNumber: currentPage,
-          sort: "wins",
-          order: "desc",
+          sort,
+          order,
         });
         setWinners(items);
         const totalCount = Number(count);
@@ -24,9 +26,8 @@ const Winners: React.FC = () => {
         console.error("Error fetching winners:", error);
       }
     };
-
-    fetchWinners();
-  }, [currentPage]);
+    fetchWinners(sort, order);
+  }, [currentPage, sort, order]);
 
   const goToPreviousPage = () => {
     setCurrentPage((prevPage) => prevPage - 1);
@@ -36,8 +37,14 @@ const Winners: React.FC = () => {
     setCurrentPage((prevPage) => prevPage + 1);
   };
 
+  const handleSortChange = (newSort: string, newOrder: string) => {
+    setSort(newSort);
+    setOrder(newOrder);
+    console.log("Sorting by " + sort + " and " + order);
+  };
+
   return (
-    <div className="bg-white flex flex-col items-center pt-14 space-y-28">
+    <div className="bg-white flex flex-col items-center pt-14 space-y-14">
       <ul className="max-w-6xl mx-auto space-y-10">
         {winners.map((winner) => (
           <li
@@ -61,15 +68,49 @@ const Winners: React.FC = () => {
           </li>
         ))}
       </ul>
-      <div>
-        <button disabled={currentPage === 1} onClick={goToPreviousPage}>
+      <div className="flex space-x-4 items-center">
+        <button
+          className="text-xl p-2 bg-black text-white rounded-xl"
+          disabled={currentPage === 1}
+          onClick={goToPreviousPage}
+        >
           Previous
         </button>
         <span>
           Page {currentPage} of {totalPages}
         </span>
-        <button disabled={currentPage === totalPages} onClick={goToNextPage}>
+        <button
+          className="text-xl p-2 bg-black text-white rounded-xl"
+          disabled={currentPage === totalPages}
+          onClick={goToNextPage}
+        >
           Next
+        </button>
+      </div>
+      <div className="flex flex-col items-center space-y-4 pb-7">
+        <button
+          className="text-xl p-2 bg-black text-white rounded-xl"
+          onClick={() => handleSortChange("wins", "DESC")}
+        >
+          Sort by Wins (Desc)
+        </button>
+        <button
+          className="text-xl p-2 bg-black text-white rounded-xl"
+          onClick={() => handleSortChange("wins", "ASC")}
+        >
+          Sort by Wins (Asc)
+        </button>
+        <button
+          className="text-xl p-2 bg-black text-white rounded-xl"
+          onClick={() => handleSortChange("time", "DESC")}
+        >
+          Sort by Time (Desc)
+        </button>
+        <button
+          className="text-xl p-2 bg-black text-white rounded-xl"
+          onClick={() => handleSortChange("time", "ASC")}
+        >
+          Sort by Time (Asc)
         </button>
       </div>
     </div>

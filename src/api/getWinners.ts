@@ -13,7 +13,7 @@ const getWinners = async ({
   order,
 }: WinnerProps): Promise<WinnersResponse> => {
   const response: Response = await fetch(
-    `${WINNERS}?_page=${pageNumber}&_limit=${WINNERS_LIMIT}&_sort=${sort}&_order=${order}}`
+    `${WINNERS}?_page=${pageNumber}&_limit=${WINNERS_LIMIT}&_sort=${sort}&_order=${order}`
   );
   const items: Winner[] = await response.json();
   const count: string | null = response.headers.get("X-Total-Count");
