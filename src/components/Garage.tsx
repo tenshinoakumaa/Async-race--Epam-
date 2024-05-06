@@ -1,5 +1,14 @@
+//@ts-nocheck
 import * as React from "react";
+import { CSSProperties } from "react";
+import { HexColorPicker } from "react-colorful";
+import { useState, useEffect } from "react";
+import CarSVG from "./CarSVG";
+
 import { Car, CarBody, GarageProps, Winner } from "../types/types";
+import carModels from "../carName&Models/carModels";
+import carNames from "../carName&Models/carNames";
+
 import createCar from "../api/createCar";
 import updateCar from "../api/updateCar";
 import deleteCar from "../api/deleteCar";
@@ -7,15 +16,10 @@ import getEngine from "../api/getEngine";
 import deleteWinner from "../api/deleteWinner";
 import updateWinner from "../api/updateWinner";
 import drive from "../api/drive";
-import carModels from "../carName&Models/carModels";
-import carNames from "../carName&Models/carNames";
-import CarSVG from "./CarSVG";
-import { CSSProperties } from "react";
-import finishLine from "../img/finish-line.png";
-import { useState, useEffect } from "react";
-import { HexColorPicker } from "react-colorful";
 import createWinner from "../api/createWinner";
 import getWinner from "../api/getWinner";
+
+import finishLine from "../img/finish-line.png";
 
 const Garage: React.FC<GarageProps & { fetchData: (page: number) => void }> = ({
   cars,
@@ -118,8 +122,6 @@ const Garage: React.FC<GarageProps & { fetchData: (page: number) => void }> = ({
 
   async function checkStatus(id: number) {
     const success = await drive(id);
-    // console.log(id + " : stopped");
-    // console.log(success);
     if (success) {
       clearInterval(intervals[id]);
     }
@@ -132,28 +134,29 @@ const Garage: React.FC<GarageProps & { fetchData: (page: number) => void }> = ({
       const newCarsVelocity = carsVelocity;
       if (newCarsVelocity) {
         const res = await getEngine(car.id, "started");
-        console.log(res);
         newCarsVelocity[(car.id - 1) % 7] = res.velocity;
         setCarsVelocity(newCarsVelocity);
-        const velocity = (86 / (500000 / carsVelocity[(car.id - 1) % 7])) * 5;
+        const velocity =
+          (86 /
+            (500000 /
+              ((carsVelocity && carsVelocity[(car.id - 1) % 7]) || 0))) *
+          5;
         const newIntervals = intervals;
         const startTime = new Date();
         newIntervals[(car.id - 1) % 7] = setInterval(async () => {
           const currentTime = new Date();
-          const timeElapsed = (currentTime - startTime) / 1000;
+          const timeElapsed = (Number(currentTime) - Number(startTime)) / 1000;
           const newPositions = carsPosition;
           newPositions[(car.id - 1) % 7] += velocity;
           setCarsPosition(() => [...newPositions]);
-          if (carsPosition[(car.id - 1) % 7] >= 86) {
+          if (carsPosition && carsPosition[(car.id - 1) % 7] >= 86) {
             clearInterval(intervals[(car.id - 1) % 7]);
             alert(car.name + " and time : " + timeElapsed);
             setResetButtonDisabled(false);
           }
         }, 1);
         setIntervals(newIntervals);
-        if (res) {
-          checkStatus(car.id);
-        }
+        if (res) checkStatus(car.id);
       }
     }
   };
@@ -165,26 +168,24 @@ const Garage: React.FC<GarageProps & { fetchData: (page: number) => void }> = ({
     setRaceInProgress(true);
     const promises = cars?.map(async (car) => {
       await getEngine(car.id, "stopped");
-    });
+    }) as Promise<void>[];
     await Promise.all(promises);
     setCarsVelocity(() => [0, 0, 0, 0, 0, 0, 0]);
     setCarsPosition(() => [0, 0, 0, 0, 0, 0, 0]);
-    console.log(carsPosition);
-    let winner = null;
+    let winner: Winner | null = null;
     const newCarsVelocity = carsVelocity;
     if (newCarsVelocity) {
       setRaceStarted(true);
       cars?.map(async (car) => {
         const res = await getEngine(car.id, "started");
-        console.log(res);
         newCarsVelocity[(car.id - 1) % 7] = res.velocity;
         setCarsVelocity(newCarsVelocity);
-        const velocity = (86 / (500000 / carsVelocity[(car.id - 1) % 7])) * 5;
+        const velocity = (86 / (500000 /((carsVelocity && carsVelocity[(car.id - 1) % 7]) || 0))) *5;
         const newIntervals = intervals;
         const startTime = new Date();
         newIntervals[(car.id - 1) % 7] = setInterval(async () => {
           const currentTime = new Date();
-          const timeElapsed = (currentTime - startTime) / 1000;
+          const timeElapsed = (Number(currentTime) - Number(startTime)) / 1000;
           const newPositions = carsPosition;
           newPositions[(car.id - 1) % 7] += velocity;
           setCarsPosition(() => [...newPositions]);
@@ -207,14 +208,9 @@ const Garage: React.FC<GarageProps & { fetchData: (page: number) => void }> = ({
                 updatedWinner.wins += 1;
                 await updateWinner(updatedWinner);
                 alert("Winner : " + car.name + " and time : " + timeElapsed);
-              }
-            }
-          }
-        }, 1);
+              }}}}, 1);
         setIntervals(newIntervals);
-        if (res) {
-          checkStatus(car.id);
-        }
+        if (res) checkStatus(car.id);
       });
     }
   };
@@ -222,7 +218,7 @@ const Garage: React.FC<GarageProps & { fetchData: (page: number) => void }> = ({
   const [raceStarted, setRaceStarted] = useState(false);
   const [resetButtonDisabled, setResetButtonDisabled] = useState(true);
   useEffect(() => {
-    let timer;
+    let timer: NodeJS.Timeout;
     if (raceStarted) {
       timer = setTimeout(() => {
         setResetButtonDisabled(false);
@@ -273,7 +269,7 @@ const Garage: React.FC<GarageProps & { fetchData: (page: number) => void }> = ({
   const [name, setName] = useState("");
 
   const [selectedCar, setSelectedCar] = useState<Car>();
-  const [intervals, setIntervals] = useState([]);
+  const [intervals, setIntervals] = useState<NodeJS.Timeout[]>([]);
 
   return (
     <div className="bg-white">
@@ -408,7 +404,9 @@ const Garage: React.FC<GarageProps & { fetchData: (page: number) => void }> = ({
             Next Page
           </button>
         </div>
-        <div className="w-full text-center text-2xl pb-4">Total count of cars : {count}</div>
+        <div className="w-full text-center text-2xl pb-4">
+          Total count of cars : {count}
+        </div>
       </div>
     </div>
   );

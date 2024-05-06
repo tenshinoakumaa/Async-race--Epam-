@@ -47,7 +47,7 @@ export interface GetCarResponse {
 }
 
 export interface CreateCarResponse {
-  (body: Car): Promise<Car>;
+  (body: CarBody): Promise<Car>;
 }
 
 export interface UpdateCarResponse {

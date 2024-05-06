@@ -8,12 +8,15 @@ const Winners: React.FC = () => {
   const [winners, setWinners] = useState<WinnerCar[]>([]);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [sort, setSort] = useState<string>("id");
-  const [order, setOrder] = useState<string>("asc");
+  const [sort, setSort] = useState<"id" | "wins" | "time">("id");
+  const [order, setOrder] = useState<"ASC" | "DESC">("ASC");
   const [totalWinners, setTotalWinners] = useState<string>("0");
 
   useEffect(() => {
-    const fetchWinners = async (sort, order) => {
+    const fetchWinners = async (
+      sort: "id" | "wins" | "time",
+      order: "DESC" | "ASC"
+    ) => {
       try {
         const { items, count } = await getWinners({
           pageNumber: currentPage,
@@ -39,7 +42,10 @@ const Winners: React.FC = () => {
     setCurrentPage((prevPage) => prevPage + 1);
   };
 
-  const handleSortChange = (newSort: string, newOrder: string) => {
+  const handleSortChange = (
+    newSort: "id" | "wins" | "time",
+    newOrder: "DESC" | "ASC"
+  ) => {
     setSort(newSort);
     setOrder(newOrder);
     console.log("Sorting by " + sort + " and " + order);
